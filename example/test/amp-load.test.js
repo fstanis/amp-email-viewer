@@ -8,6 +8,13 @@ test('AMP runtime loads in iframe', async t => {
   t.pass();
 });
 
+test('iframe adjusts height', async t => {
+  const {iframe, iframeElement} = t.context;
+  await iframe.waitForSelector('html.i-amphtml-iframed');
+  const height = await iframeElement.evaluate(el => el.getAttribute('height'));
+  t.assert(Number(height) > 1);
+});
+
 test('AMP iframe uses CSP', async t => {
   const {page, iframe} = t.context;
   await page.setRequestInterception(true);
