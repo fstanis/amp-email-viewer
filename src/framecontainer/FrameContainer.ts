@@ -25,8 +25,7 @@ export class FrameContainer {
 
   /**
    * @param {HTMLElement} parent Element to create an iframe inside of
-   * @param {string} relayPage URL where the relay page is hosted
-   * @param {string=} targetOrigin Origin of relay page, opaque if 'null'
+   * @param {Config} config Config with parameters related to the AMP viewer
    */
   constructor(parent: HTMLElement, config: Config) {
     this.parent = parent;
@@ -78,6 +77,11 @@ export class FrameContainer {
     return this.messaging;
   }
 
+  /**
+   * Returns the Config.
+   *
+   * @return {Config}
+   */
   getConfig(): Config {
     return this.config;
   }
