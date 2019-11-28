@@ -50,6 +50,12 @@ export interface Config {
    * Must not be set if rtvPin is set.
    */
   runtimeCDN?: string;
+
+  /**
+   * If set, this is the maximum size (in bytes) the AMP email is allowed to
+   * have.
+   */
+  maximumAMPSize?: number;
 }
 
 // tslint:disable:no-any
@@ -96,6 +102,12 @@ export function validateConfig(config: any): config is Config {
     return false;
   }
   if (config.rtvPin && config.runtimeCDN) {
+    return false;
+  }
+  if (
+    config.maximumAMPSize &&
+    (typeof config.maximumAMPSize !== 'number' || config.maximumAMPSize < 0)
+  ) {
     return false;
   }
   return true;

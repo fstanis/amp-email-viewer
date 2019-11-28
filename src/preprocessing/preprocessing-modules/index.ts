@@ -6,5 +6,11 @@ interface PreprocessingModule {
 }
 
 import { module as Validator } from './Validator';
+import { module as SizeCheck } from './SizeCheck';
+import { module as ElementLimits } from './ElementLimits';
 
-export const modules: PreprocessingModule[] = [Validator];
+export const modules: PreprocessingModule[] = [
+  SizeCheck,
+  Validator,
+  ElementLimits,
+];
