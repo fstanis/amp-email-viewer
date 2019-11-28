@@ -6,5 +6,6 @@ interface PreprocessingModule {
 }
 
 import { module as Validator } from './Validator';
+import { module as BrowserDetection } from './BrowserDetection';
 
-export const modules: PreprocessingModule[] = [Validator];
+export const modules: PreprocessingModule[] = [BrowserDetection, Validator];
