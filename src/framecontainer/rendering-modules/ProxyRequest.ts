@@ -16,6 +16,7 @@ export interface ProxyResponse {
 
 export interface TemplateProxyResponse {
   html: string;
+  body: string;
   init: ResponseInit;
 }
 

@@ -1,3 +1,5 @@
+import {isValidURL, isValidURLWithPlaceholder} from './util';
+
 /**
  * Global config that defines the behavior of both the viewer and preprocessing.
  */
@@ -19,10 +21,9 @@ export interface Config {
   imageProxyURL?: string;
 
   /**
-   * URL of the XHR proxy.
+   * URL of the XHR proxy. If unset, XHRs are not proxied.
    *
-   * If unset, templateProxyURL is used. If both are unset, XHR requests are not
-   * proxied.
+   * Must be set if templateProxyURL is set.
    */
   xhrProxyURL?: string;
 
@@ -30,6 +31,14 @@ export interface Config {
    * URL of the template proxy. If unset, template rendering is not proxied.
    */
   templateProxyURL?: string;
+
+  /**
+   * Runs some preprocessing modules on the output received from the template
+   * proxy.
+   *
+   * Must be false if templateProxyURL is unset.
+   */
+  processTemplateProxyOutput?: boolean;
 
   /**
    * URL of the link redirection endpoint. If unset, hyperlinks are not replaced
@@ -84,16 +93,28 @@ export function validateConfig(config: any): config is Config {
   if (typeof config !== 'object') {
     return false;
   }
-  if (!isURL(config.relayPageURL)) {
+  if (!isValidURL(config.relayPageURL)) {
     return false;
   }
   if (typeof config.useOpaqueOrigin !== 'boolean') {
     return false;
   }
-  if (config.imageProxyURL && !isURL(config.imageProxyURL)) {
+  if (config.imageProxyURL && !isValidURLWithPlaceholder(config.imageProxyURL)) {
     return false;
   }
-  if (config.linkRedirectURL && !isURL(config.linkRedirectURL)) {
+  if (config.xhrProxyURL && !isValidURL(config.xhrProxyURL)) {
+    return false;
+  }
+  if (!config.xhrProxyURL && config.templateProxyURL) {
+    return false;
+  }
+  if (config.templateProxyURL && !isValidURL(config.templateProxyURL)) {
+    return false;
+  }
+  if (!config.templateProxyURL && config.processTemplateProxyOutput) {
+    return false;
+  }
+  if (config.linkRedirectURL && !isValidURLWithPlaceholder(config.linkRedirectURL)) {
     return false;
   }
 
@@ -103,7 +124,7 @@ export function validateConfig(config: any): config is Config {
   ) {
     return false;
   }
-  if (config.runtimeCDN && !isURL(config.runtimeCDN)) {
+  if (config.runtimeCDN && !isValidURL(config.runtimeCDN)) {
     return false;
   }
   if (
@@ -129,16 +150,6 @@ export function validateConfig(config: any): config is Config {
     config.maximumAMPSize &&
     (typeof config.maximumAMPSize !== 'number' || config.maximumAMPSize < 0)
   ) {
-    return false;
-  }
-  return true;
-}
-
-function isURL(url: string): boolean {
-  try {
-    // tslint:disable:no-unused-expression
-    new URL(url);
-  } catch (_) {
     return false;
   }
   return true;

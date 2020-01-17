@@ -57,7 +57,6 @@ export const VIEWER_PARAMETERS: ViewerParameters = {
   log: false,
   csi: true,
   cap: [
-    ViewerCapability.VIEWER_RENDER_TEMPLATE,
     ViewerCapability.ERROR_REPORTER,
     ViewerCapability.XHR_INTERCEPTOR,
   ],

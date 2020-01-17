@@ -1,8 +1,7 @@
 import { FrameContainer } from '../FrameContainer';
 import { Messaging } from '@ampproject/viewer-messaging';
 import { ProxyRequest, ProxyResponse } from './ProxyRequest';
-import { Config } from '../../config';
-import { isValidURL, postJSON } from '../../util';
+import { postJSON } from '../../util';
 
 /**
  * Reacts to changes to the AMP document's height and resizes the iframe to
@@ -14,16 +13,13 @@ class XHRProxyImpl {
 
   constructor(frameContainer: FrameContainer) {
     const config = frameContainer.getConfig();
-    this.proxyURL = config.xhrProxyURL || config.templateProxyURL || '';
+    this.proxyURL = config.xhrProxyURL || '';
     this.messaging = frameContainer.getMessaging();
   }
 
   start(): void {
     if (!this.proxyURL) {
       return;
-    }
-    if (!isValidURL(this.proxyURL)) {
-      throw new Error('Invalid proxy URL found in config');
     }
     this.messaging.registerHandler('xhr', this.xhrHandler);
   }
