@@ -30,11 +30,43 @@ const { IMAGE_PROXY_ORIGIN } = process.env;
 const ALLOW_DISABLE_CSP = Boolean(process.env.ALLOW_DISABLE_CSP);
 
 /**
+ * Disables safeguard against same-origin iframes.
+ *
+ * Dangerous, only use for testing.
+ */
+const DISABLE_SAME_ORIGIN_SAFEGUARD = Boolean(
+  process.env.DISABLE_SAME_ORIGIN_SAFEGUARD
+);
+
+/**
+ * JS source code that safeguards loading an email on a same-origin iframe.
+ */
+const SAME_ORIGIN_SAFEGUARD_JS = DISABLE_SAME_ORIGIN_SAFEGUARD
+  ? ''
+  : `var accessibleWindows = 0;
+try {
+  parent.document;
+  accessibleWindows++;
+} catch (e) {}
+for (var i = 0; i < parent.frames.length; i++) {
+  try {
+    parent.frames[i].document;
+    accessibleWindows++;
+  } catch (e) {}
+}
+if (accessibleWindows > 1) {
+  throw new Error('Email iframe is not correctly isolated.');
+}
+`;
+
+/**
  * JS source code of the bootstrap page.
  *
  * @const {string}
  */
-const BOOTSTRAP_JS = `function message(event) {
+const BOOTSTRAP_JS =
+  SAME_ORIGIN_SAFEGUARD_JS +
+  `function message(event) {
   if (event.data && event.data.amp) {
     window.removeEventListener('message', message);
     document.write(event.data.amp);
